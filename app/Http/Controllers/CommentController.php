@@ -12,17 +12,29 @@ class CommentController extends Controller
     public function comment(Request $request, Post $post)
     {
         if (!Auth::check()) {
-            return redirect()->route('login');
+            return response()->json(['success' => false, 'message' => 'Unauthenticated'], 401);
         }
+        
         $request->validate([
             'comment' => 'required',
         ]);
-        Comment::create([
+
+        $newComment = Comment::create([
             'post_id' => $post->id,
             'user_id' => Auth::id(),
             'comment' => $request->comment
         ]);
 
-        return redirect()->to(url()->previous() . '#comment-section');
+        // User ပုံနဲ့ နာမည်ပါအောင် relationship နဲ့ တကွ ပြန်ထုတ်ပေးခြင်း
+        $newComment->load('user');
+
+        // စုစုပေါင်း comment အရေအတွက်
+        $commentCount = $post->comments()->count();
+
+        return response()->json([
+            'success' => true,
+            'comment' => $newComment,
+            'commentCount' => $commentCount
+        ]);
     }
 }

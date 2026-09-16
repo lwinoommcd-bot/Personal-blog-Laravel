@@ -24,7 +24,7 @@ class AppServiceProvider extends ServiceProvider
         View::composer('ui-panel.side-bar', function ($view) {
             $view->with([
                 'posts' => Post::latest()->take(6)->get(),
-                'categories' => Category::all() // 👈 Categories အားလုံးကို ဆွဲထုတ်ခြင်း
+                'categories' => Category::all() 
             ]);
         });
 
