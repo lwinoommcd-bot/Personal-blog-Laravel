@@ -26,6 +26,7 @@ class UiController extends Controller
 
     public function postDetails(Post $post)
     {
+        $categories = Category::all();
         $userReaction = LikesDislike::where('post_id', $post->id)
             ->where('user_id', Auth::id())
             ->value('type');
@@ -42,6 +43,7 @@ class UiController extends Controller
             ->count();
 
         $comments = Comment::where('post_id', $post->id)->where('status', 'show')->with('user')->latest()->get();
+        $recentPosts = Post::latest()->take(5)->get();
 
         return view('ui-panel.post-detail', compact(
             'post',
@@ -50,6 +52,8 @@ class UiController extends Controller
             'userDislike',
             'likeCount',
             'dislikeCount',
+            'recentPosts',
+            'categories'
 
         ));
     }
@@ -58,7 +62,8 @@ class UiController extends Controller
     {
         $categories = Category::all();
         $posts = Post::latest()->paginate(4);
-        return view('ui-panel.posts', compact(['categories', 'posts']));
+        $recentPosts = Post::latest()->take(5)->get();
+        return view('ui-panel.posts', compact(['categories', 'posts', 'recentPosts']));
     }
 
     public function search(Request $request)
@@ -71,13 +76,15 @@ class UiController extends Controller
                 $category->where('name', 'like', "%" . $search_data . "%");
             })
             ->paginate(4);
-        return view('ui-panel.posts', compact(['categories', 'posts']));
+        $recentPosts = Post::latest()->take(5)->get();
+        return view('ui-panel.posts', compact(['categories', 'posts','recentPosts']));
     }
 
     public function searchByCategory($id)
     {
         $categories = Category::all();
-        $posts = Post::where('category_id',$id)->paginate(5);
-        return view('ui-panel.posts', compact(['categories', 'posts']));
+        $posts = Post::where('category_id', $id)->paginate(5);
+        $recentPosts = Post::latest()->take(5)->get();
+        return view('ui-panel.posts', compact(['categories', 'posts','recentPosts']));
     }
 }

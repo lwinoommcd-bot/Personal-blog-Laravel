@@ -2,7 +2,78 @@
 @section('title', $post->title)
 @section('content')
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="max-w-7xl mx-auto  py-2">
+
+        <!-- 1. MOBILE ONLY: Search & Dropdown Category (ဖုန်းစခရင်မှာ အပေါ်ဆုံးရောက်မည်) -->
+        <div class="block lg:hidden space-y-6 mb-6">
+
+            <!-- Search Box Card -->
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-100 p-6 space-y-4">
+                <h5 class="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
+                    <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    Search
+                </h5>
+                <form action="{{ url('/search') }}" method="GET">
+                    @csrf
+                    <div class="relative flex items-center">
+                        <span class="absolute left-4 text-slate-400">
+                            <i class="fa fa-search text-xs"></i>
+                        </span>
+                        <input type="text" name="search"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-11 pr-4 py-3 text-sm focus:outline-none focus:border-indigo-600 focus:bg-white text-slate-800 transition-all"
+                            placeholder="Search Posts...">
+                        <button type="submit"
+                            class="absolute right-1.5 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-xs font-semibold shadow-sm transition">
+                            Go
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Categories Dropdown Card -->
+            <div x-data="{ open: false }" class="bg-white rounded-3xl shadow-sm border border-slate-100 p-6 space-y-3">
+                <button @click="open = !open"
+                    class="w-full flex items-center justify-between text-lg font-bold text-slate-900 tracking-tight focus:outline-none">
+                    <span class="flex items-center gap-2">
+                        <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h7" />
+                        </svg>
+                        Categories
+                    </span>
+                    <svg class="w-5 h-5 text-slate-400 transition-transform duration-300" :class="{ 'rotate-180': open }"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+
+                <div x-show="open" x-transition.origin.top.duration.200ms class="space-y-1 pt-2 border-t border-slate-100">
+                    <ul class="space-y-1 text-sm font-medium text-slate-600">
+                        @if(isset($categories))
+                            @foreach ($categories as $category)
+                                <li>
+                                    <a href="{{ url('search_category/' . $category->id) }}"
+                                        class="flex items-center justify-between py-2.5 px-3.5 rounded-2xl hover:bg-indigo-50/60 hover:text-indigo-600 font-semibold transition-all group">
+                                        <span>{{ $category->name }}</span>
+                                        <svg class="w-4 h-4 text-slate-400 group-hover:text-indigo-600 group-hover:translate-x-1 transition-transform"
+                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </a>
+                                </li>
+                            @endforeach
+                        @endif
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 2. DESKTOP & GENERAL GRID LAYOUT -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             <div class="lg:col-span-8 space-y-8">
                 <div class="bg-white shadow-lg rounded-2xl overflow-hidden border border-gray-100">
@@ -26,7 +97,7 @@
                                 <span>{{ $post->created_at->format('d F, Y') }}</span>
                             </div>
 
-                            <!-- Author Name (Safely handled for guests) -->
+                            <!-- Author Name -->
                             <div class="flex items-center space-x-1.5">
                                 <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -87,11 +158,12 @@
                         <!-- Comments Section -->
                         <div id="comment-section" class="space-y-6 pt-4 border-t border-gray-100">
 
-                            <!-- Comment Form (onsubmit နဲ့ ချိတ်မည်) -->
+                            <!-- Comment Form -->
                             <form onsubmit="submitComment(event, '{{ url('/post/comments/' . $post->id) }}')"
                                 class="space-y-3">
                                 @csrf
-                                <textarea required rows="3" placeholder="Write a comment..." name="comment" id="comment-input"
+                                <textarea required rows="3" placeholder="Write a comment..." name="comment"
+                                    id="comment-input"
                                     class="w-full p-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none text-sm bg-gray-50"></textarea>
 
                                 <button type="submit"
@@ -103,7 +175,6 @@
                                     <span>Submit Comment</span>
                                 </button>
 
-                                <!-- Comments Count Badge -->
                                 <div
                                     class="text-sm font-medium text-slate-500 bg-slate-50 px-3 py-1.5 rounded-lg inline-block">
                                     <span id="comment-count"
@@ -111,7 +182,7 @@
                                 </div>
                             </form>
 
-                            <!-- Comments List Container (အသစ်ထည့်လိုက်တာတွေ ချက်ချင်းပေါ်လာဖို့ ID ပေးမည်) -->
+                            <!-- Comments List Container -->
                             <div id="comments-list" class="space-y-4">
                                 @foreach ($comments as $comment)
                                     <div class="space-y-4">
@@ -131,12 +202,49 @@
 
                     </div>
                 </div>
+
+                <!-- MOBILE ONLY: Recent Posts (Detail Page ၏ အောက်ဆုံးတွင် ပေါ်မည်) -->
+                <div class="block lg:hidden bg-white rounded-3xl shadow-sm border border-slate-100 p-6 space-y-4 mt-8">
+                    <h5 class="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
+                        <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Recent Posts
+                    </h5>
+                    <hr class="border-slate-100">
+
+                    <div class="space-y-4">
+                        @if(isset($recentPosts))
+                            @foreach ($recentPosts as $recent)
+                                <a href="{{ url('posts/' . $recent->id . '/details') }}"
+                                    class="flex items-center gap-4 group p-2 rounded-2xl hover:bg-slate-50 transition-all">
+                                    <div
+                                        class="w-16 h-16 rounded-2xl overflow-hidden flex-shrink-0 border border-slate-100 shadow-sm">
+                                        <img src="{{ asset('storage/' . $recent->image) }}" alt=""
+                                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    </div>
+                                    <div class="space-y-1.5 flex-grow">
+                                        <span
+                                            class="text-[10px] bg-indigo-50 text-indigo-600 border border-indigo-100 px-2 py-0.5 rounded-full font-semibold inline-block">
+                                            {{ $recent->category->name ?? 'Uncategorized' }}
+                                        </span>
+                                        <h6
+                                            class="text-xs font-bold text-slate-800 group-hover:text-indigo-600 transition-colors line-clamp-2 leading-relaxed">
+                                            {{ $recent->title }}
+                                        </h6>
+                                    </div>
+                                </a>
+                            @endforeach
+                        @endif
+                    </div>
+                </div>
+
             </div>
-            <!-- ညာဘက်ခြမ်း: Recent Posts Sidebar (4 Columns) -->
-            <div class="lg:col-span-4 space-y-6">
 
+            <!-- ညာဘက်ခြမ်း: Recent Posts Sidebar (4 Columns) - Laptop မှာသာ ပုံမှန်အတိုင်း ပြမည် -->
+            <div class="hidden lg:block lg:col-span-4 space-y-6">
                 @include('ui-panel.side-bar')
-
             </div>
         </div>
 
@@ -160,7 +268,6 @@
                     })
                     .then(data => {
                         if (data && data.success) {
-                            // Update Like UI
                             const likeBtn = document.getElementById('like-btn');
                             const likeCount = document.getElementById('like-count');
                             likeCount.innerText = data.likeCount;
@@ -172,7 +279,6 @@
                                 likeCount.className = "text-xs font-semibold px-1.5 py-0.5 rounded-md bg-black/10";
                             }
 
-                            // Update Dislike UI
                             const dislikeBtn = document.getElementById('dislike-btn');
                             const dislikeCount = document.getElementById('dislike-count');
                             dislikeCount.innerText = data.dislikeCount;
@@ -188,14 +294,13 @@
                     .catch(error => console.error('Error:', error));
             }
 
-
             function submitComment(event, url) {
-                event.preventDefault(); // Page reload လုံးဝမဖြစ်အောင် တားဆီးခြင်း
+                event.preventDefault();
 
                 const commentInput = document.getElementById('comment-input');
                 const commentText = commentInput.value;
 
-                if (!commentText.trim()) return; // အလွတ်ကြီး ဖြစ်နေရင် မပို့ပါ
+                if (!commentText.trim()) return;
 
                 fetch(url, {
                     method: 'POST',
@@ -215,27 +320,23 @@
                     })
                     .then(data => {
                         if (data && data.success) {
-                            // Textarea ကို ရှင်းလင်းပစ်မည်
                             commentInput.value = '';
-
-                            // Comment အရေအတွက်ကို အပ်ဒိတ်လုပ်မည်
                             document.getElementById('comment-count').innerText = data.commentCount;
 
-                            // Comment အသစ်ကို HTML ပုံစံဖြင့် ဇယားထဲသို့ ချက်ချင်း ပေါင်းထည့်ပေးမည် (prepend)
                             const commentsList = document.getElementById('comments-list');
                             const userImage = data.comment.user.image ? "{{ asset('storage/') }}/" + data.comment.user.image : "https://via.placeholder.com/150";
 
                             const newCommentHTML = `
-                    <div class="space-y-4 animate-fade-in">
-                        <div class="p-3 bg-gray-50 rounded-2xl border border-gray-100">
-                            <div class="flex items-center space-x-3 mb-2">
-                                <img src="${userImage}" alt="" class="w-8 h-8 rounded-full bg-gray-200 object-cover">
-                                <span class="font-semibold text-gray-800 text-sm">${data.comment.user.name}</span>
-                            </div>
-                            <p class="text-gray-600 text-sm pl-11">${data.comment.comment}</p>
-                        </div>
-                    </div>
-                `;
+                                    <div class="space-y-4 animate-fade-in">
+                                        <div class="p-3 bg-gray-50 rounded-2xl border border-gray-100">
+                                            <div class="flex items-center space-x-3 mb-2">
+                                                <img src="${userImage}" alt="" class="w-8 h-8 rounded-full bg-gray-200 object-cover">
+                                                <span class="font-semibold text-gray-800 text-sm">${data.comment.user.name}</span>
+                                            </div>
+                                            <p class="text-gray-600 text-sm pl-11">${data.comment.comment}</p>
+                                        </div>
+                                    </div>
+                                `;
 
                             commentsList.insertAdjacentHTML('afterbegin', newCommentHTML);
                         }
@@ -243,5 +344,7 @@
                     .catch(error => console.error('Error:', error));
             }
         </script>
+
+    </div>
 
 @endsection

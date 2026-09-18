@@ -43,7 +43,7 @@
             <div class="flex items-center gap-2">
               @if(Auth::user()->image)
                 <img src="{{ asset('storage/' . Auth::user()->image) }}" alt="Profile"
-                  style="width: 25px; height: 25px; border-radius: 50%; object-fit: cover;">
+                  style="width: 25px; height: 25px; border-radius: 50%; object-fit: cover;border:1px solid gray;">
               @else
                 <div
                   style="width: 25px; height: 25px; border-radius: 50%; background-color: #4f46e5; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px;">
@@ -156,7 +156,7 @@
   </header>
 
   <!-- MAIN CONTAINER -->
-  <main class="max-w-7xl mx-auto px-6 py-16 space-y-24">
+  <main class="max-w-7xl mx-auto px-2 py-12 space-y-24">
     @yield('content')
   </main>
 
@@ -174,9 +174,9 @@
 
       <div class="space-y-4">
         <h5 class="text-white font-bold tracking-wider text-sm">CONTACT INFO</h5>
-        <p class="text-sm flex items-center gap-3"><i class="fas fa-mobile-alt text-blue-400"></i> 09403438913</p>
+        <p class="text-sm flex items-center gap-3"><i class="fas fa-mobile-alt text-blue-400"></i> 09xxxxxx3</p>
         <p class="text-sm flex items-center gap-3"><i class="far fa-envelope text-blue-400"></i>
-          yms.yemyintsoe@gmail.com</p>
+          sid.mm.com</p>
       </div>
 
       <div class="space-y-4">
